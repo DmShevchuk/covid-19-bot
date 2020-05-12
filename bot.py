@@ -7,7 +7,7 @@ import requests
 
 def start(update, context):
     context.chat_data['activity'] = list()
-    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-8 стран'], ['Официальный сайт по борьбе с коронавирусом',
+    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Официальный сайт по борьбе с коронавирусом',
                                                             'Случайное развлечение']]
     markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
     update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n'
@@ -20,7 +20,7 @@ def message_hand(update, context):
     if text == 'случайное развлечение':
         update.message.reply_text(activity(context))
         return
-    if text == 'топ-8 стран':
+    if text == 'топ-10 стран':
         update.message.reply_text(get_top())
         return
     if text == 'официальный сайт по борьбе с коронавирусом':
@@ -110,9 +110,9 @@ def get_top():
     soup = BeautifulSoup(page.text, 'html.parser')
     top = soup.findAll('th', class_='l3HOY')
 
-    result = [country.text for country in top[1:11]]
+    result = ['•' + country.text for country in top[1:11]]
 
-    return 'Страны с наибольшим числом заражений:\n\n' + '\n'.join(result)
+    return '😷 ТОП-10 стран 😷\n\n' + '\n'.join(result)
 
 
 offers = ['Вот фильмы, которые должени посмотреть каждый!\n'
