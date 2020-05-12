@@ -77,6 +77,7 @@ def country_handler(country):
 
     if country in countries.keys():
         stats = get_stats(countries[country])
+
         if country == 'мир':
             message = 'Статистика по всему миру\n\n'
         else:
