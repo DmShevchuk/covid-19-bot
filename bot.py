@@ -8,7 +8,7 @@ import requests
 def start(update, context):
     context.chat_data['activity'] = list()
     keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Официальный сайт по борьбе с коронавирусом',
-                                                            'Случайное развлечение']]
+                                                             'Случайное развлечение'], ['Новые случаи в России']]
     markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
     update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n'
                               '🎉 Нажмите на клавиатуре кнопку "Случайное развлечение", если не знаете,'
@@ -22,6 +22,9 @@ def message_hand(update, context):
         return
     if text == 'топ-10 стран':
         update.message.reply_text(get_top())
+        return
+    if text == 'новые случаи в россии':
+        update.message.reply_text(new_cases())
         return
     if text == 'официальный сайт по борьбе с коронавирусом':
         update.message.reply_text('🦠 стопкоронавирус.рф')
@@ -114,6 +117,19 @@ def get_top():
     result = ['•' + country.text for country in top[1:11]]
 
     return '😷 ТОП-10 стран 😷\n\n' + '\n'.join(result)
+
+
+def new_cases():
+    page = requests.get('https://www.worldometers.info/coronavirus/country/russia/')
+
+    soup = BeautifulSoup(page.text, 'html.parser')
+
+    cases = soup.findAll('li', class_='news_li')[0].text.split()
+
+    new_cases_ = 'Новых случаев: ' + cases[0] + '\n'
+    new_deaths = 'Смертей: ' + cases[4] + '\n'
+
+    return new_cases_ + new_deaths
 
 
 offers = ['Вот фильмы, которые должени посмотреть каждый!\n'
