@@ -7,9 +7,11 @@ import requests
 
 def start(update, context):
     context.chat_data['activity'] = list()
+
     keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Сайт по борьбе с коронавирусом',
                                                              'Случайное развлечение'], ['Новые случаи в России']]
     markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
+
     update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n'
                               '🎉 Нажмите на клавиатуре кнопку "Случайное развлечение", если не знаете,'
                               'чем себя занять\n\n', reply_markup=markup)
@@ -62,6 +64,7 @@ def get_stats(country):
 
 
 def country_handler(country):
+    # Countries for quick search statistic
     countries = {
         'мир': 'мир',
         'сша': 'us',
@@ -132,6 +135,7 @@ def new_cases():
     return new_cases_ + new_deaths
 
 
+# Random entertainments
 offers = ['Вот фильмы, которые должени посмотреть каждый!\n'
           'https://www.ivi.ru/titr/goodmovies/30-must-see',
           'Здесь много образовательных курсов: как платных, так и бесплатных\n'
@@ -153,6 +157,7 @@ offers = ['Вот фильмы, которые должени посмотрет
           ]
 
 
+# Generate activity
 def activity(context):
     if not context.chat_data['activity']:
         context.chat_data['activity'] = offers[:]
