@@ -3,6 +3,7 @@ from telegram import ReplyKeyboardMarkup
 from bs4 import BeautifulSoup
 from random import shuffle
 import requests
+import googletrans
 
 
 def start(update, context):
@@ -54,10 +55,11 @@ def get_stats(country):
     latest_update = soup.findAll('div', style=style)[0].text
     latest_update = ' '.join(translate(latest_update, lang='en-ru').split()[:-1]) + ' GMT'
     latest_update = latest_update.split(':')
+
     to_return = f'🟨Всего заболело: {cases[0].text.strip()}\n\n' \
                 f'🟥Умерло: {cases[1].text.strip()}\n\n' \
                 f'🟩Выздоровело: {cases[2].text.strip()}\n\n' \
-                f'{latest_update[0]}:\n' \
+                f'{latest_update[0].capitalize()}:\n' \
                 f'{latest_update[1]}:{latest_update[2]}'
 
     return to_return
@@ -98,17 +100,17 @@ def country_handler(country):
 
 
 def translate(text, lang='ru-en'):
-    yandex_translate_api = 'https://translate.yandex.net/api/v1.5/tr.json/translate'
+    translator = googletrans.Translator()
 
-    params = {
-        'key': 'trnsl.1.1.20200330T161011Z.4777f8ad251f2aae.1e137893605996ff5aec1c7f39a813ca10b3bd3a',
-        'lang': lang,
-        'text': text
-    }
+    source_lang = lang.split('-')[0]
+    dest_lang = lang.split('-')[1]
 
-    json_response = requests.get(yandex_translate_api, params=params).json()
+    translated_text = translator.translate(text, src=source_lang, dest=dest_lang).text.lower()
+    if len(translated_text.split()) < 5:
+        translated_text = translated_text.split()
+        translated_text = '-'.join(translated_text)
 
-    return json_response['text'][0].strip()
+    return translated_text.strip()
 
 
 def get_top():
@@ -129,8 +131,8 @@ def new_cases():
 
     cases = soup.findAll('li', class_='news_li')[0].text.split()
 
-    new_cases_ = 'Новых случаев: ' + cases[0] + '\n'
-    new_deaths = 'Смертей: ' + cases[4] + '\n'
+    new_cases_ = '😷 Новых случаев: ' + cases[0] + '\n'
+    new_deaths = '💀 Смертей: ' + cases[4] + '\n'
 
     return new_cases_ + new_deaths
 
