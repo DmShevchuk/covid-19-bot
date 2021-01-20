@@ -3,17 +3,20 @@ from telegram import ReplyKeyboardMarkup
 from bs4 import BeautifulSoup
 import requests
 import googletrans
+from time import time
+
+REQUESTS = {}
 
 
 def start(update, context):
     context.chat_data['activity'] = list()
 
-    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Новые случаи в России'], ['Сайт по борьбе с коронавирусом']]
+    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Новые случаи в России'],
+                ['Сайт по борьбе с коронавирусом']]
     markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
 
-    update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n'
-                              '🎉 Нажмите на клавиатуре кнопку "Случайное развлечение", если не знаете,'
-                              'чем себя занять\n\n', reply_markup=markup)
+    update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n',
+                              reply_markup=markup)
 
 
 def message_hand(update, context):
@@ -39,23 +42,21 @@ def get_stats(country):
         style = 'font-size:13px; color:#999; text-align:center'
 
     page = requests.get(url)
-
     soup = BeautifulSoup(page.text, 'html.parser')
-
     if '404 Not Found' in str(soup):
         return '❌ Не удалось получить статистику по указанной стране'
 
     cases = soup.findAll('div', class_='maincounter-number')
 
-    latest_update = soup.findAll('div', style=style)[0].text
-    latest_update = ' '.join(translate(latest_update, lang='en-ru').split()[:-1]) + ' GMT'
-    latest_update = latest_update.split(':')
-
-    to_return = f'🟨Всего заболело: {cases[0].text.strip()}\n\n' \
-                f'🟥Умерло: {cases[1].text.strip()}\n\n' \
-                f'🟩Выздоровело: {cases[2].text.strip()}\n\n' \
-                f'{latest_update[0].capitalize()}:\n' \
-                f'{latest_update[1]}:{latest_update[2]}'
+    all_cases = cases[0].text.strip()
+    deaths = cases[1].text.strip()
+    recovered = cases[2].text.strip()
+    last_update = time()
+    print(last_update)
+    print(country)
+    to_return = f'🟨Всего заболело: {all_cases}\n\n' \
+                f'🟥Умерло: {deaths}\n\n' \
+                f'🟩Выздоровело: {recovered}\n\n'
 
     return to_return
 
@@ -133,7 +134,7 @@ def new_cases():
 
 
 def main():
-    updater = Updater('', use_context=True)
+    updater = Updater('1273560851:AAHo2oYvyEr5GRJ1KgUqORYEmTZFwNQZxLg', use_context=True)
     dispatcher = updater.dispatcher
     # handlers
     dispatcher.add_handler(CommandHandler('start', start))
