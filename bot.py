@@ -1,7 +1,6 @@
 from telegram.ext import Updater, MessageHandler, Filters, CommandHandler
 from telegram import ReplyKeyboardMarkup
 from bs4 import BeautifulSoup
-from random import shuffle
 import requests
 import googletrans
 
@@ -9,8 +8,7 @@ import googletrans
 def start(update, context):
     context.chat_data['activity'] = list()
 
-    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Сайт по борьбе с коронавирусом',
-                                                             'Случайное развлечение'], ['Новые случаи в России']]
+    keyboard = [['Россия', 'США'], ['Мир', 'ТОП-10 стран'], ['Новые случаи в России'], ['Сайт по борьбе с коронавирусом']]
     markup = ReplyKeyboardMarkup(keyboard, one_time_keyboard=True)
 
     update.message.reply_text('🌍Введите название любой страны, я постараюсь предоставить статистику!\n\n'
@@ -20,9 +18,6 @@ def start(update, context):
 
 def message_hand(update, context):
     text = update.message.text.strip().lower()
-    if text == 'случайное развлечение':
-        update.message.reply_text(activity(context))
-        return
     if text == 'топ-10 стран':
         update.message.reply_text(get_top())
         return
@@ -137,48 +132,8 @@ def new_cases():
     return new_cases_ + new_deaths
 
 
-# Random entertainments
-offers = ['Вот фильмы, которые должени посмотреть каждый!\n'
-          'https://www.ivi.ru/titr/goodmovies/30-must-see',
-          'Здесь много образовательных курсов: как платных, так и бесплатных\n'
-          'https://welcome.stepik.org',
-          'Metropolitan Opera анонсировала бесплатные стримы Live in HD.\n'
-          'Расписание и ссылки на просмотр здесь:\n'
-          'https://www.metopera.org/user-information/nightly-met-opera-streams/',
-          'Туринский «Ювентус» открыл болельщикам бесплатный доступ к клубному телевидению.\n'
-          'https://www.juventus.com/it/',
-          'Пятичасовое путешествие по Эрмитажу, снятое на iPhone 11 Pro одним дублем в 4К\n'
-          'https://www.youtube.com/watch?v=_MU73rsL9qE',
-          'Образовательная онлайн-платформа «Учи.ру» с 23 марта дает возможность проводить'
-          ' уроки во время карантина по видеосвязи.\n'
-          'https://lp.uchi.ru/distant-uchi',
-          'Курс по инвестициям Тинькофф-журнала.\n'
-          'https://journal.tinkoff.ru/pro/invest/#/',
-          'Музыкальная платформа Boiler Room запустит онлайн-кинофестиваль The 4:3.'
-          ' С 16 апреля по 18 мая она покажет 13 фильмов.'
-          ]
-
-
-# Generate activity
-def activity(context):
-    if not context.chat_data['activity']:
-        context.chat_data['activity'] = offers[:]
-        shuffle(context.chat_data['activity'])
-        action = context.chat_data['activity'][0]
-
-        del context.chat_data['activity'][0]
-
-        return action
-    else:
-        action = context.chat_data['activity'][0]
-
-        del context.chat_data['activity'][0]
-
-        return action
-
-
 def main():
-    updater = Updater('1273560851:AAHkGnpdZhJ4x0xyZXgS1NQXGAvGLepY0-I', use_context=True)
+    updater = Updater('', use_context=True)
     dispatcher = updater.dispatcher
     # handlers
     dispatcher.add_handler(CommandHandler('start', start))
