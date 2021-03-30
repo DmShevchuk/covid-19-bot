@@ -62,7 +62,6 @@ def get_stats(country):
                 f'🟩Выздоровело: {recovered}\n\n'
     # Добавляем в REQUESTS статистику по стране
     REQUESTS[country] = (to_return, time())
-    print(REQUESTS)
     return to_return
 
 
@@ -130,7 +129,7 @@ def get_top():
 
     to_return = '😷 ТОП-10 стран 😷\n\n' + '\n'.join(result)
     REQUESTS['get_top_countries'] = (to_return, time())
-    print(REQUESTS)
+
     return to_return
 
 
@@ -151,7 +150,7 @@ def new_cases():
 
     to_return = new_cases_ + new_deaths
     REQUESTS['new_cases'] = (to_return, time())
-    print(REQUESTS)
+
     return new_cases_ + new_deaths
 
 
