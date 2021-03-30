@@ -34,6 +34,11 @@ def message_hand(update, context):
 
 
 def get_stats(country):
+    global REQUESTS
+    # Проверяем, что запрос по стране был сделан менее 10 минут назад
+    if (country in REQUESTS) and (time() - REQUESTS[country][1]) <= 600:
+        return REQUESTS[country][0]
+
     if country == 'мир':
         url = 'https://www.worldometers.info/coronavirus/'
         style = 'font-size:13px; color:#999; margin-top:5px; text-align:center'
@@ -52,12 +57,12 @@ def get_stats(country):
     deaths = cases[1].text.strip()
     recovered = cases[2].text.strip()
     last_update = time()
-    print(last_update)
-    print(country)
     to_return = f'🟨Всего заболело: {all_cases}\n\n' \
                 f'🟥Умерло: {deaths}\n\n' \
                 f'🟩Выздоровело: {recovered}\n\n'
-
+    # Добавляем в REQUESTS статистику по стране
+    REQUESTS[country] = (to_return, time())
+    print(REQUESTS)
     return to_return
 
 
@@ -110,6 +115,12 @@ def translate(text, lang='ru-en'):
 
 
 def get_top():
+    global REQUESTS
+
+    # Проверяем, что запрос был сделан не более 10 минут назад
+    if ('get_top_countries' in REQUESTS) and (time() - REQUESTS['get_top_countries'][1] <= 600):
+        return REQUESTS['get_top_countries'][0]
+
     # List of countries
     page = requests.get('https://news.google.com/covid19/map?hl=ru&gl=RU&ceid=RU:ru')
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -117,10 +128,18 @@ def get_top():
 
     result = ['•' + country.text for country in top[1:11]]
 
-    return '😷 ТОП-10 стран 😷\n\n' + '\n'.join(result)
+    to_return = '😷 ТОП-10 стран 😷\n\n' + '\n'.join(result)
+    REQUESTS['get_top_countries'] = (to_return, time())
+    print(REQUESTS)
+    return to_return
 
 
 def new_cases():
+    global REQUESTS
+    # Проверяем, что запрос был сделан не более 10 минут назад
+    if ('new_cases' in REQUESTS) and (time() - REQUESTS['new_cases'][1] <= 600):
+        return REQUESTS['new_cases'][0]
+
     page = requests.get('https://www.worldometers.info/coronavirus/country/russia/')
 
     soup = BeautifulSoup(page.text, 'html.parser')
@@ -130,6 +149,9 @@ def new_cases():
     new_cases_ = '😷 Новых случаев: ' + cases[0] + '\n'
     new_deaths = '💀 Смертей: ' + cases[4] + '\n'
 
+    to_return = new_cases_ + new_deaths
+    REQUESTS['new_cases'] = (to_return, time())
+    print(REQUESTS)
     return new_cases_ + new_deaths
 
 
