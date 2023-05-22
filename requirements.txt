@@ -1,4 +1,4 @@
 python-telegram-bot==12.4.2
-requests==2.22.0
+requests==2.31.0
 bs4==0.0.1
 google_trans_new==1.1.9
